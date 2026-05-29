@@ -1,6 +1,42 @@
 <?php
 
+require'../conexao.php';
+if($_SERVER['REQUEST_METHOD']==='POST'){
+    $titulo = trim($_POST['titulo']);
+    $autor = trim($_POST['disponivel'])? 1 : 0;
+    $imagem = null;
+    if(isset($_FILES['imagem'])&& $_FILES['imagem']['error']===0){
+        if(lis_dir('../Imagens')){
+            mkdir('../Imagens', 0777, true);
 
+        }
+        $extensão=pathinfo($_FILES['imagem']['name'], PATHINFO_EXTENSION);
+        $nomeArquivo=uniqid().".".$Extensao;
+        $nomeArquivo= uniqid().".".$extensão;
+        $caminho = "../Imagens".$nomeArquivo;
+        if(move_upload_files($_FILES['imagem']['temp_name'].$caminho)){
+            $imagem= $nomeArquivo;
+
+        }else{}
+        echo "<script>alert("Erro ao salvar a imagem!')<script>";"
+    }
+        try{
+        $sql="INSERT INTO livros (titulo, autor, disponivel, imagem)
+        VALUES (:titulo, :autor, :disponivel, :imagem)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+        ':titulo'=>$titulo,
+        ':autor'=>$autor,
+        ':disponivel" =>$disponivel,
+        ':imagem'=>$imagem
+
+        ]);
+        echo "<script>alert('Livro cadastrado com sucesso!');
+        window.location.href = '../painel.php';</script>";
+        exit;
+        catch(PDOException $e){
+        echo "<script>alert(''Erro: ".$e->getMessage()."");</script>";)
+}
 
 
 
