@@ -1,3 +1,4 @@
+
 <?php
 require '../conexao.php';
 if(!isset($_GET['id']) || empty($_GET['id'])){
@@ -8,45 +9,49 @@ if(!isset($_GET['id']) || empty($_GET['id'])){
 $id=intval($_GET['id']);
 $sql = "SELECT * FROM usuarios WHERE id=:id LIMIT 1";
 $stmt = $pdo->prepare($sql);
-$stml = execute(['id' = >$id]);//
-$usuario =  $stml->fetch(PDO: : FETCH_ASSOC);
- IF(!$usuario){
-    header("Location: listar.php");
+$stmt -> execute([':id'=>$id]);//
+$usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+if(!$usuario){
+   header("Location: listar.php");
     exit;
-
- }
- $mensagem="";
- if($_SERVER['REQUEST_METHOD']==='POST'){
-    $nome=trim($_POST['nome']);
+}
+$mensagem = "";
+if($_SERVER['REQUEST_METHOD']==='POST'){
+    $nome = trim($_POST['nome']);
     $email = trim($_POST['email']);
-    $tipo= trim($_POST['senha'])){
-        $senha = passaword_hash($_POST['senha'], PASSAWORD_DEFAULT);
-        $sql = "UPDATE usuarios SET nome = :nome", email =:email, senha =:senha,
-        tipo = :tipo WHERE id = :id";
+    $tipo = trim($_POST['tipo']);
+    if(!empty($_POST['senha'])){
+        $senha = password_hash($_POST['senha'],PASSWORD_DEFAULT);
+        $sql = "UPDATE usuarios SET nome =:nome, email = :email, senha = :senha,
+        tipo = :tipo WHERE id = :id";//
         $params = [
-        ':nome' = >$nome,//
-        ':email'=>$email,//
-        'senha' =>$senha,//
-        ':tipo'=>$tipo,//
-        ':id'=>$id,//
-
-        ]
-        }
-        try{
-        :$stml = $pdo ->prepare($sql);
-        $stml ->execute($params);
-        header("Location: listar.php";
-        exit;
-        }catch(PDOException $e){
-        $mensagem = "<p class="erro'>Erro ao atualizar: ".$e->getMessage()."<p>";
-
-        }else{
-            $sql = "UPDATE" usuarios SET nome = :nome, email = :email, tipo = :tipo
+            ':nome'=>$nome,//
+            ':email'=>$email,//
+            ':senha'=>$senha,//
+            ':tipo'=>$tipo,//
+            ':id'=>$id//
+        ];
+    } else{
+        $sql = "UPDATE usuarios SET nome = :nome, email = :email, tipo = :tipo
         WHERE id = :id";
-        $stmt = $pdo->prepare($sql);
-
+        $params = [
+            ':nome'=>$nome,//
+            ':email'=>$email,//
+            ':tipo'=>$tipo,//
+            ':id'=>$id//
+        ];
     }
- }
+    try{
+        $stmt = $pdo->prepare($sql);
+        $stmt ->execute($params);
+        header("Location: listar.php");
+        exit;
+    }catch(PDOException $e){
+        $mensagem = "<p class='erro'>Erro ao atualizar: ".$e->getMessage()."<p>";
+    }
+ 
+}
+ 
  
 ?>
 <!DOCTYPE html>
